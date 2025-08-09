@@ -1,7 +1,4 @@
-//src/db/models/contact.js
-import mongoose from 'mongoose';
-
-const { Schema, model } = mongoose;
+import { model, Schema } from 'mongoose';
 
 const contactSchema = new Schema(
   {
@@ -32,4 +29,4 @@ const contactSchema = new Schema(
   },
 );
 
-export const ContactCollection = model('contacts', contactSchema);
+export const Contact = model('contact', contactSchema);

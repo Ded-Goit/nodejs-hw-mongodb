@@ -1,18 +1,21 @@
-//src/services/contacts.js
-import { ContactCollection } from '../db/models/contact.js';
-import mongoose from 'mongoose';
+import { Contact } from '../db/models/contact.js';
 
-export const getContacts = async () => {
-  const contacts = await ContactCollection.find();
-  return contacts;
+export const getContacts = () => {
+  return Contact.find();
 };
 
-export const getContactById = async (contactId) => {
-  // Перевірка: чи це дійсний Mongo ObjectId
-  if (!mongoose.Types.ObjectId.isValid(contactId)) {
-    return null; // поводимося так, ніби не знайдено
-  }
+export const getContactById = (contactId) => {
+  return Contact.findById(contactId);
+};
 
-  const contact = await ContactCollection.findById(contactId);
-  return contact;
+export const createContact = (contactData) => {
+  return Contact.create(contactData);
+};
+
+export const updateContact = (contactId, updateData) => {
+  return Contact.findByIdAndUpdate(contactId, updateData, { new: true });
+};
+
+export const deleteContact = (contactId) => {
+  return Contact.findByIdAndDelete(contactId);
 };

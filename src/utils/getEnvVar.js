@@ -1,4 +1,3 @@
-//src/utils/getEnvVar.js
 export const getEnvVar = (key, defaultValue = undefined) => {
   const value = process.env[key];
 

@@ -1,4 +1,3 @@
-//src/constants/envVars.js
 export const ENV_VARS = {
   PORT: 'PORT',
   MONGODB_USER: 'MONGODB_USER',
