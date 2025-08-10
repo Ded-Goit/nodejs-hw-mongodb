@@ -9,7 +9,12 @@ import {
 
 export const getContactsController = async (req, res) => {
   const contacts = await getContacts();
-  res.json(contacts);
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully fetched contacts!',
+    data: contacts,
+  });
 };
 
 export const getContactByIdController = async (req, res) => {
@@ -17,7 +22,12 @@ export const getContactByIdController = async (req, res) => {
   if (!contact) {
     throw createHttpError(404, 'Contact not found');
   }
-  res.json(contact);
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully fetched a contact!',
+    data: contact,
+  });
 };
 
 export const createContactController = async (req, res) => {
