@@ -1,7 +1,19 @@
 import { Contact } from '../db/models/contact.js';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
-export const getContacts = () => {
-  return Contact.find();
+export const getContacts = async ({ page, perPage }) => {
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
+
+  const totalCount = await Contact.countDocuments();
+  const contacts = await Contact.find().skip(skip).limit(limit);
+
+  const paginationData = calculatePaginationData(totalCount, perPage, page);
+
+  return {
+    data: contacts,
+    ...paginationData,
+  };
 };
 
 export const getContactById = (contactId) => {
