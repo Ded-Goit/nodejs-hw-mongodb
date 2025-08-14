@@ -1,0 +1,128 @@
+{
+  "info": {
+    "name": "Contacts API (HW4 Validation)",
+    "_postman_id": "b2cf93b2-15a4-4eac-b6a3-23f818d60f7e",
+    "description": "Колекція для тестування CRUD, валідації, пагінації, сортування і фільтрації контактів на render.com",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /contacts (всі)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"]
+        }
+      }
+    },
+    {
+      "name": "GET /contacts (пагінація)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts?page=2&perPage=3",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"],
+          "query": [
+            { "key": "page", "value": "2" },
+            { "key": "perPage", "value": "3" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /contacts (сортування)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts?sortBy=name&sortOrder=desc",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"],
+          "query": [
+            { "key": "sortBy", "value": "name" },
+            { "key": "sortOrder", "value": "desc" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /contacts (фільтри)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts?type=work&isFavourite=false",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"],
+          "query": [
+            { "key": "type", "value": "work" },
+            { "key": "isFavourite", "value": "false" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /contacts/:id",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts/688f3d4620cfb647e3ad82d1",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts", "688f3d4620cfb647e3ad82d1"]
+        }
+      }
+    },
+    {
+      "name": "POST /contacts",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test Contact\",\n  \"phoneNumber\": \"+380501112233\",\n  \"email\": \"test@mail.com\",\n  \"isFavourite\": true,\n  \"contactType\": \"work\"\n}"
+        },
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"]
+        }
+      }
+    },
+    {
+      "name": "PATCH /contacts/:id",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Name\",\n  \"isFavourite\": false\n}"
+        },
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts/688f3d4620cfb647e3ad82d4",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts", "688f3d4620cfb647e3ad82d4"]
+        }
+      }
+    },
+    {
+      "name": "DELETE /contacts/:id",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts/689835085466c54d6d7c62f0",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts", "689835085466c54d6d7c62f0"]
+        }
+      }
+    }
+  ]
+}

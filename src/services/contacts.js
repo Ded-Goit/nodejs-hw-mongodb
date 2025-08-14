@@ -1,23 +1,24 @@
 import { Contact } from '../db/models/contact.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
-import { SORT_ORDER } from '../constants/index.js';
 
-export const getContacts = async ({
-  page,
-  perPage,
-  sortBy = 'name',
-  sortOrder = SORT_ORDER.ASC,
-}) => {
+export const getContacts = async ({ page, perPage, filter = {} }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
-  const totalCount = await Contact.countDocuments();
+  const contactsQuery = Contact.find();
 
-  const contacts = await Contact.find()
-    .skip(skip)
-    .limit(limit)
-    .sort({ [sortBy]: sortOrder }) // додаємо сортування
-    .exec();
+  if (filter.contactType) {
+    contactsQuery.where('contactType').equals(filter.contactType);
+  }
+
+  if (typeof filter.isFavourite === 'boolean') {
+    contactsQuery.where('isFavourite').equals(filter.isFavourite);
+  }
+
+  const [totalCount, contacts] = await Promise.all([
+    Contact.find().merge(contactsQuery).countDocuments(),
+    contactsQuery.skip(skip).limit(limit),
+  ]);
 
   const paginationData = calculatePaginationData(totalCount, perPage, page);
 
