@@ -1,126 +1,112 @@
 {
   "info": {
-    "name": "Contacts API (HW4 Validation)",
-    "_postman_id": "b2cf93b2-15a4-4eac-b6a3-23f818d60f7e",
-    "description": "Колекція для тестування CRUD, валідації, пагінації, сортування і фільтрації контактів на render.com",
+    "name": "Contacts API (hw4-validation)",
+    "_postman_id": "c1234567-abcd-4321-efgh-1234567890ab",
+    "description": "CRUD + валідація, пагінація, сортування. Використовує Environment Contacts API Environment.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "GET /contacts (всі)",
+      "name": "Get all contacts (pagination + sorting)",
       "request": {
         "method": "GET",
+        "header": [],
         "url": {
-          "raw": "https://contacts-fl84.onrender.com/contacts",
-          "protocol": "https",
-          "host": ["contacts-fl84", "onrender", "com"],
-          "path": ["contacts"]
-        }
-      }
-    },
-    {
-      "name": "GET /contacts (пагінація)",
-      "request": {
-        "method": "GET",
-        "url": {
-          "raw": "https://contacts-fl84.onrender.com/contacts?page=2&perPage=3",
-          "protocol": "https",
-          "host": ["contacts-fl84", "onrender", "com"],
+          "raw": "{{baseUrl}}/contacts?page=1&perPage=5&sortBy=name&sortOrder=asc",
+          "host": ["{{baseUrl}}"],
           "path": ["contacts"],
           "query": [
-            { "key": "page", "value": "2" },
-            { "key": "perPage", "value": "3" }
-          ]
-        }
-      }
-    },
-    {
-      "name": "GET /contacts (сортування)",
-      "request": {
-        "method": "GET",
-        "url": {
-          "raw": "https://contacts-fl84.onrender.com/contacts?sortBy=name&sortOrder=desc",
-          "protocol": "https",
-          "host": ["contacts-fl84", "onrender", "com"],
-          "path": ["contacts"],
-          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "perPage", "value": "5" },
             { "key": "sortBy", "value": "name" },
-            { "key": "sortOrder", "value": "desc" }
+            { "key": "sortOrder", "value": "asc" }
           ]
         }
       }
     },
     {
-      "name": "GET /contacts (фільтри)",
+      "name": "Get contact by ID",
       "request": {
         "method": "GET",
         "url": {
-          "raw": "https://contacts-fl84.onrender.com/contacts?type=work&isFavourite=false",
-          "protocol": "https",
-          "host": ["contacts-fl84", "onrender", "com"],
-          "path": ["contacts"],
-          "query": [
-            { "key": "type", "value": "work" },
-            { "key": "isFavourite", "value": "false" }
-          ]
+          "raw": "{{baseUrl}}/contacts/{{contactId_1}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts", "{{contactId_1}}"]
         }
       }
     },
     {
-      "name": "GET /contacts/:id",
-      "request": {
-        "method": "GET",
-        "url": {
-          "raw": "https://contacts-fl84.onrender.com/contacts/688f3d4620cfb647e3ad82d1",
-          "protocol": "https",
-          "host": ["contacts-fl84", "onrender", "com"],
-          "path": ["contacts", "688f3d4620cfb647e3ad82d1"]
-        }
-      }
-    },
-    {
-      "name": "POST /contacts",
+      "name": "Create new contact (valid)",
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Test Contact\",\n  \"phoneNumber\": \"+380501112233\",\n  \"email\": \"test@mail.com\",\n  \"isFavourite\": true,\n  \"contactType\": \"work\"\n}"
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"phoneNumber\": \"+380991112233\",\n  \"email\": \"john@example.com\",\n  \"isFavourite\": true,\n  \"contactType\": \"work\"\n}"
         },
         "url": {
-          "raw": "https://contacts-fl84.onrender.com/contacts",
-          "protocol": "https",
-          "host": ["contacts-fl84", "onrender", "com"],
+          "raw": "{{baseUrl}}/contacts",
+          "host": ["{{baseUrl}}"],
           "path": ["contacts"]
         }
       }
     },
     {
-      "name": "PATCH /contacts/:id",
+      "name": "Create new contact (invalid, validation error)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Jo\",\n  \"phoneNumber\": \"\",\n  \"contactType\": \"invalidType\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/contacts",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts"]
+        }
+      }
+    },
+    {
+      "name": "Update contact (PATCH, valid)",
       "request": {
         "method": "PATCH",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Updated Name\",\n  \"isFavourite\": false\n}"
+          "raw": "{\n  \"email\": \"newmail@example.com\",\n  \"isFavourite\": false\n}"
         },
         "url": {
-          "raw": "https://contacts-fl84.onrender.com/contacts/688f3d4620cfb647e3ad82d4",
-          "protocol": "https",
-          "host": ["contacts-fl84", "onrender", "com"],
-          "path": ["contacts", "688f3d4620cfb647e3ad82d4"]
+          "raw": "{{baseUrl}}/contacts/{{contactId_update}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts", "{{contactId_update}}"]
         }
       }
     },
     {
-      "name": "DELETE /contacts/:id",
+      "name": "Update contact (PATCH, invalid email)",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"notAnEmail\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/contacts/{{contactId_update}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts", "{{contactId_update}}"]
+        }
+      }
+    },
+    {
+      "name": "Delete contact",
       "request": {
         "method": "DELETE",
         "url": {
-          "raw": "https://contacts-fl84.onrender.com/contacts/689835085466c54d6d7c62f0",
-          "protocol": "https",
-          "host": ["contacts-fl84", "onrender", "com"],
-          "path": ["contacts", "689835085466c54d6d7c62f0"]
+          "raw": "{{baseUrl}}/contacts/{{contactId_delete}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts", "{{contactId_delete}}"]
         }
       }
     }
