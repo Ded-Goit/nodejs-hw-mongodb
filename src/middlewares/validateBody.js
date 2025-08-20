@@ -5,11 +5,17 @@ export const validateBody = (schema) => async (req, res, next) => {
     await schema.validateAsync(req.body, { abortEarly: false });
     next();
   } catch (err) {
-    const formattedErrors = err.details.map((e) => {
-      // прибираємо лапки та робимо повідомлення простішим
-      return e.message.replace(/"/g, '');
-    });
+    // Формуємо детальну інформацію про помилки
+    const errors = err.details.map((detail) => ({
+      message: detail.message,
+      path: detail.path.join('.'),
+      type: detail.type,
+    }));
 
-    next(createHttpError(400, 'Bad Request', { errors: formattedErrors }));
+    next(
+      createHttpError(400, 'Validation Error', {
+        errors,
+      }),
+    );
   }
 };

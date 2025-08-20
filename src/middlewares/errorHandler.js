@@ -6,9 +6,7 @@ export const errorHandler = (err, req, res, next) => {
     return res.status(err.status).json({
       status: err.status,
       message: err.message,
-      data: err.errors
-        ? err.errors.map((e) => e.message) // Joi-помилки
-        : null, // якщо Joi не передавав details
+      data: err.errors || [],
     });
   }
 
@@ -16,13 +14,13 @@ export const errorHandler = (err, req, res, next) => {
     return res.status(500).json({
       status: 500,
       message: 'Database error',
-      data: err.message,
+      data: [err.message],
     });
   }
 
   res.status(500).json({
     status: 500,
-    message: 'Something went wrong',
-    data: err.message,
+    message: 'Internal Server Error',
+    data: [err.message],
   });
 };
