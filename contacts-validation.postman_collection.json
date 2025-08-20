@@ -1,0 +1,129 @@
+{
+  "info": {
+    "name": "Contacts API - Validation Tests",
+    "_postman_id": "c0d3babe-1234-5678-9abc-validation-tests",
+    "description": "Тести валідації для POST і PATCH /contacts",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "POST /contacts - Name too short",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Al\",\n  \"phoneNumber\": \"+380501234567\",\n  \"email\": \"test@example.com\",\n  \"contactType\": \"personal\"\n}"
+        },
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"]
+        }
+      }
+    },
+    {
+      "name": "POST /contacts - Invalid phone number",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Alex Johnson\",\n  \"phoneNumber\": \"12345\",\n  \"email\": \"alex@example.com\",\n  \"contactType\": \"business\"\n}"
+        },
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"]
+        }
+      }
+    },
+    {
+      "name": "POST /contacts - Invalid email",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Smith\",\n  \"phoneNumber\": \"+380671234567\",\n  \"email\": \"not-an-email\",\n  \"contactType\": \"personal\"\n}"
+        },
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"]
+        }
+      }
+    },
+    {
+      "name": "POST /contacts - Invalid contactType",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Maria Ivanova\",\n  \"phoneNumber\": \"+380931234567\",\n  \"email\": \"maria@example.com\",\n  \"contactType\": \"office\"\n}"
+        },
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"]
+        }
+      }
+    },
+    {
+      "name": "POST /contacts - Multiple errors",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Jo\",\n  \"phoneNumber\": \"98765\",\n  \"email\": \"wrong\",\n  \"contactType\": \"invalid\"\n}"
+        },
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts"]
+        }
+      }
+    },
+    {
+      "name": "PATCH /contacts/:id - Invalid email",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"not-valid\"\n}"
+        },
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts/000000000000000000000000",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts", "000000000000000000000000"]
+        }
+      }
+    },
+    {
+      "name": "PATCH /contacts/:id - Invalid phone",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phoneNumber\": \"abc\"\n}"
+        },
+        "url": {
+          "raw": "https://contacts-fl84.onrender.com/contacts/000000000000000000000000",
+          "protocol": "https",
+          "host": ["contacts-fl84", "onrender", "com"],
+          "path": ["contacts", "000000000000000000000000"]
+        }
+      }
+    }
+  ]
+}
