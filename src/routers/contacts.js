@@ -12,9 +12,12 @@ import {
   createContactSchema,
   updateContactSchema,
 } from '../validation/contactsvalidation.js';
+import { authenticate } from '../middlewares/authenticate.js';
 //import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
 const contactsRouter = Router();
+
+contactsRouter.use(authenticate);
 
 contactsRouter.get('/contacts', getContactsController);
 
