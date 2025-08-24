@@ -1,29 +1,32 @@
 import { Contact } from '../db/models/contact.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
-export const getContacts = async ({ page, perPage, filter = {}, sort }) => {
+export const getContacts = async ({
+  page,
+  perPage,
+  filter = {},
+  sort,
+  userId,
+}) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
-  const contactsQuery = Contact.find();
+  const contactsQuery = Contact.find({ userId });
 
-  // Фільтрація по contactType
   if (filter.contactType) {
     contactsQuery.where('contactType').equals(filter.contactType);
   }
 
-  // Фільтрація по isFavourite
   if (typeof filter.isFavourite === 'boolean') {
     contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
-  // Сортування
   if (sort && sort.sortBy) {
     contactsQuery.sort({ [sort.sortBy]: sort.sortOrder });
   }
 
   const [totalCount, contacts] = await Promise.all([
-    Contact.find().merge(contactsQuery).countDocuments(),
+    Contact.countDocuments(contactsQuery.getFilter()),
     contactsQuery.skip(skip).limit(limit),
   ]);
 
@@ -35,18 +38,20 @@ export const getContacts = async ({ page, perPage, filter = {}, sort }) => {
   };
 };
 
-export const getContactById = (contactId) => {
-  return Contact.findById(contactId);
+export const getContactById = (contactId, userId) => {
+  return Contact.findOne({ _id: contactId, userId });
 };
 
 export const createContact = (contactData) => {
   return Contact.create(contactData);
 };
 
-export const updateContact = (contactId, updateData) => {
-  return Contact.findByIdAndUpdate(contactId, updateData, { new: true });
+export const updateContact = (contactId, updateData, userId) => {
+  return Contact.findOneAndUpdate({ _id: contactId, userId }, updateData, {
+    new: true,
+  });
 };
 
-export const deleteContact = (contactId) => {
-  return Contact.findByIdAndDelete(contactId);
+export const deleteContact = (contactId, userId) => {
+  return Contact.findOneAndDelete({ _id: contactId, userId });
 };
