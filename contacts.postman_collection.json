@@ -1,8 +1,8 @@
 {
   "info": {
     "name": "Contacts API",
-    "_postman_id": "12345678-aaaa-bbbb-cccc-1234567890ab",
-    "description": "Collection for testing auth and contacts API",
+    "_postman_id": "c1d13d3a-5f28-4a3d-b8a1-contacts-api",
+    "description": "Postman collection for testing Contacts API with authentication and CRUD operations.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -10,50 +10,79 @@
       "name": "Auth",
       "item": [
         {
-          "name": "Register",
+          "name": "Register User",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"123456\"\n}"
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Secret123\"\n}"
             },
-            "url": {
-              "raw": "https://contacts-fl84.onrender.com/auth/register",
-              "protocol": "https",
-              "host": ["contacts-fl84", "onrender", "com"],
-              "path": ["auth", "register"]
-            }
+            "url": "{{baseUrl}}/auth/register"
           }
         },
         {
-          "name": "Login",
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"accessToken\", jsonData.accessToken);",
+                  "pm.environment.set(\"refreshToken\", jsonData.refreshToken);",
+                  "pm.environment.set(\"sessionId\", jsonData.sessionId);"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"123456\"\n}"
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Secret123\"\n}"
             },
-            "url": {
-              "raw": "https://contacts-fl84.onrender.com/auth/login",
-              "protocol": "https",
-              "host": ["contacts-fl84", "onrender", "com"],
-              "path": ["auth", "login"]
-            }
+            "url": "{{baseUrl}}/auth/login"
           }
         },
         {
-          "name": "Logout",
+          "name": "Refresh Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.accessToken) {",
+                  "   pm.environment.set(\"accessToken\", jsonData.data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": {
-              "raw": "https://contacts-fl84.onrender.com/auth/logout",
-              "protocol": "https",
-              "host": ["contacts-fl84", "onrender", "com"],
-              "path": ["auth", "logout"]
-            }
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/refresh"
+          }
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/logout"
           }
         }
       ]
@@ -62,49 +91,61 @@
       "name": "Contacts",
       "item": [
         {
-          "name": "Get Contacts",
+          "name": "Get All Contacts",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": {
-              "raw": "https://contacts-fl84.onrender.com/contacts",
-              "protocol": "https",
-              "host": ["contacts-fl84", "onrender", "com"],
-              "path": ["contacts"]
-            }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/contacts"
           }
         },
         {
           "name": "Create Contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData._id) { pm.environment.set(\"contactId\", jsonData._id); }"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Ivan Petrenko\",\n  \"phoneNumber\": \"+380671234567\",\n  \"email\": \"ivan@example.com\",\n  \"isFavourite\": true,\n  \"contactType\": \"work\"\n}"
+              "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\",\n  \"phone\": \"+380971112233\"\n}"
             },
-            "url": {
-              "raw": "https://contacts-fl84.onrender.com/contacts",
-              "protocol": "https",
-              "host": ["contacts-fl84", "onrender", "com"],
-              "path": ["contacts"]
-            }
+            "url": "{{baseUrl}}/contacts"
           }
         },
         {
           "name": "Get Contact by ID",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": {
-              "raw": "https://contacts-fl84.onrender.com/contacts/{{contactId}}",
-              "protocol": "https",
-              "host": ["contacts-fl84", "onrender", "com"],
-              "path": ["contacts", "{{contactId}}"]
-            }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/contacts/{{contactId}}"
           }
         },
         {
@@ -112,45 +153,42 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"isFavourite\": false\n}"
+              "raw": "{\n  \"name\": \"Alice Updated\",\n  \"phone\": \"+380501234567\"\n}"
             },
-            "url": {
-              "raw": "https://contacts-fl84.onrender.com/contacts/{{contactId}}",
-              "protocol": "https",
-              "host": ["contacts-fl84", "onrender", "com"],
-              "path": ["contacts", "{{contactId}}"]
-            }
+            "url": "{{baseUrl}}/contacts/{{contactId}}"
           }
         },
         {
           "name": "Delete Contact",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": {
-              "raw": "https://contacts-fl84.onrender.com/contacts/{{contactId}}",
-              "protocol": "https",
-              "host": ["contacts-fl84", "onrender", "com"],
-              "path": ["contacts", "{{contactId}}"]
-            }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/contacts/{{contactId}}"
           }
         }
       ]
     }
   ],
   "variable": [
-    {
-      "key": "token",
-      "value": ""
-    },
-    {
-      "key": "contactId",
-      "value": ""
-    }
+    { "key": "baseUrl", "value": "https://contacts-fl84.onrender.com" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "sessionId", "value": "" },
+    { "key": "contactId", "value": "" }
   ]
 }
