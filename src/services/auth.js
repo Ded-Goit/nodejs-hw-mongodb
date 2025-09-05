@@ -1,79 +1,86 @@
-import crypto from 'node:crypto';
-import createHttpError from 'http-errors';
+import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
-import { User } from '../db/models/user.js';
-import { Session } from '../db/models/session.js';
+import createHttpError from 'http-errors';
+import { UsersCollection } from '../db/models/user.js';
 import { FIFTEEN_MINUTES, THIRTY_DAY } from '../constants/index.js';
+import { SessionsCollection } from '../db/models/session.js';
 
 export const registerUser = async (payload) => {
-  const existingUser = await User.findOne({ email: payload.email });
-  if (existingUser) {
-    throw createHttpError(409, 'User with this email already registered!');
-  }
+  const user = await UsersCollection.findOne({ email: payload.email });
+  if (user) throw createHttpError(409, 'Email in use');
 
   const encryptedPassword = await bcrypt.hash(payload.password, 10);
 
-  const user = await User.create({
+  return await UsersCollection.create({
     ...payload,
     password: encryptedPassword,
   });
-
-  return user;
 };
 
-export const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email });
-
+export const loginUser = async (payload) => {
+  const user = await UsersCollection.findOne({ email: payload.email });
   if (!user) {
-    throw createHttpError(401, 'User with given credentials does not exist!');
+    throw createHttpError(404, 'User not found');
+  }
+  const isEqual = await bcrypt.compare(payload.password, user.password);
+
+  if (!isEqual) {
+    throw createHttpError(401, 'Unauthorized');
   }
 
-  const arePasswordsEqual = await bcrypt.compare(password, user.password);
+  await SessionsCollection.deleteOne({ userId: user._id });
 
-  if (!arePasswordsEqual) {
-    throw createHttpError(401, 'User with given credentials does not exist!');
-  }
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
 
-  await Session.deleteOne({ userId: user._id });
-
-  const session = await Session.create({
-    accessToken: crypto.randomBytes(30).toString('base64'),
-    refreshToken: crypto.randomBytes(30).toString('base64'),
+  return await SessionsCollection.create({
+    userId: user._id,
+    accessToken,
+    refreshToken,
     accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
     refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAY),
-    userId: user._id,
+  });
+};
+
+const createSession = () => {
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
+
+  return {
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAY),
+  };
+};
+
+export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
+  const session = await SessionsCollection.findOne({
+    _id: sessionId,
+    refreshToken,
   });
 
-  return session;
+  if (!session) {
+    throw createHttpError(401, 'Session not found');
+  }
+
+  const isSessionTokenExpired =
+    new Date() > new Date(session.refreshTokenValidUntil);
+
+  if (isSessionTokenExpired) {
+    throw createHttpError(401, 'Session token expired');
+  }
+
+  const newSession = createSession();
+
+  await SessionsCollection.deleteOne({ _id: sessionId, refreshToken });
+
+  return await SessionsCollection.create({
+    userId: session.userId,
+    ...newSession,
+  });
 };
 
 export const logoutUser = async (sessionId) => {
-  await Session.findByIdAndDelete(sessionId);
-};
-
-//  додано новий сервіс
-export const refreshSession = async (sessionId, refreshToken) => {
-  const oldSession = await Session.findById(sessionId);
-
-  if (
-    !oldSession ||
-    oldSession.refreshToken !== refreshToken ||
-    oldSession.refreshTokenValidUntil < new Date()
-  ) {
-    throw createHttpError(401, 'Invalid session or refresh token!');
-  }
-
-  // видаляємо стару
-  await Session.findByIdAndDelete(sessionId);
-
-  // створюємо нову
-  const newSession = await Session.create({
-    accessToken: crypto.randomBytes(30).toString('base64'),
-    refreshToken: crypto.randomBytes(30).toString('base64'),
-    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
-    refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAY),
-    userId: oldSession.userId,
-  });
-
-  return newSession;
+  await SessionsCollection.deleteOne({ _id: sessionId });
 };

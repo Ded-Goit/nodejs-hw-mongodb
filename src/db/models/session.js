@@ -1,35 +1,14 @@
-import { model, Schema, Types } from 'mongoose';
-import { User } from './user.js';
+import { model, Schema } from 'mongoose';
 
-const sessionSchema = new Schema(
+const sessionsSchema = new Schema(
   {
-    accessToken: {
-      type: String,
-      required: true,
-    },
-    refreshToken: {
-      type: String,
-      required: true,
-    },
-    accessTokenValidUntil: {
-      type: Date,
-      required: true,
-    },
-    refreshTokenValidUntil: {
-      type: Date,
-      required: true,
-    },
-    userId: {
-      type: Types.ObjectId,
-      ref: User,
-      required: true,
-      unique: true,
-    },
+    userId: { type: Schema.Types.ObjectId, ref: 'users' },
+    accessToken: { type: String, required: true },
+    refreshToken: { type: String, required: true },
+    accessTokenValidUntil: { type: Date, required: true },
+    refreshTokenValidUntil: { type: Date, required: true },
   },
-  {
-    versionKey: false,
-    timestamps: true,
-  },
+  { timestamps: true, versionKey: false },
 );
 
-export const Session = model('session', sessionSchema);
+export const SessionsCollection = model('sessions', sessionsSchema);
