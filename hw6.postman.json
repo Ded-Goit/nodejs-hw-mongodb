@@ -1,0 +1,220 @@
+{
+  "info": {
+    "name": "Contacts API Full Tests",
+    "_postman_id": "c7e8d5f2-9c55-4a02-9332-1af1ef2a1abc",
+    "description": "Full test collection for Contacts API with Auth and File Uploads",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"12345678\",\n  \"name\": \"Test User\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"12345678\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "Auth - Refresh",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "refreshToken={{refreshToken}}; sessionId={{sessionId}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/refresh",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "refresh"]
+        }
+      }
+    },
+    {
+      "name": "Auth - Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "refreshToken={{refreshToken}}; sessionId={{sessionId}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/logout",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "logout"]
+        }
+      }
+    },
+    {
+      "name": "Auth - Send Reset Email",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testuser@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/send-reset-email",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "send-reset-email"]
+        }
+      }
+    },
+    {
+      "name": "Auth - Reset Password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"token\": \"{{resetToken}}\",\n  \"password\": \"newpassword123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/reset-pwd",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "reset-pwd"]
+        }
+      }
+    },
+    {
+      "name": "Contacts - Get All",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/contacts?page=1&perPage=5&sortBy=name&sortOrder=asc&isFavourite=true",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "perPage", "value": "5" },
+            { "key": "sortBy", "value": "name" },
+            { "key": "sortOrder", "value": "asc" },
+            { "key": "isFavourite", "value": "true" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Contacts - Get By ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/contacts/{{contactId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts", "{{contactId}}"]
+        }
+      }
+    },
+    {
+      "name": "Contacts - Create (with photo)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "name", "value": "Alice Doe", "type": "text" },
+            { "key": "phone", "value": "+380931234567", "type": "text" },
+            { "key": "email", "value": "alice@example.com", "type": "text" },
+            { "key": "contactType", "value": "personal", "type": "text" },
+            { "key": "isFavourite", "value": "true", "type": "text" },
+            {
+              "key": "photo",
+              "type": "file",
+              "src": "C:/Users/User/Desktop/Photo.JPG"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/contacts",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts"]
+        }
+      }
+    },
+    {
+      "name": "Contacts - Patch (with photo)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "name", "value": "Alice Updated", "type": "text" },
+            { "key": "isFavourite", "value": "false", "type": "text" },
+            {
+              "key": "photo",
+              "type": "file",
+              "src": "C:/Users/You/Pictures/avatar2.png"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/contacts/{{contactId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts", "{{contactId}}"]
+        }
+      }
+    },
+    {
+      "name": "Contacts - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/contacts/{{contactId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["contacts", "{{contactId}}"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "https://contacts-fl84.onrender.com" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "sessionId", "value": "" },
+    { "key": "contactId", "value": "" },
+    { "key": "resetToken", "value": "" }
+  ]
+}
