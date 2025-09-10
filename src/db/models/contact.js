@@ -29,7 +29,10 @@ const contactsSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      photo: { type: String },
+    },
+    photo: {
+      type: String,
+      default: null,
     },
   },
 
