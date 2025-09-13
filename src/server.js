@@ -8,6 +8,7 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import { requestIdMiddleware } from './middlewares/requestIdMiddleware.js';
 import { UPLOAD_DIR } from './constants/index.js';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 export const setupServer = () => {
   const app = express();
@@ -26,6 +27,8 @@ export const setupServer = () => {
   ]);
 
   app.use(router);
+  // Swagger UI
+  app.use('/api-docs', swaggerDocs());
 
   // 404 handler
   app.use(notFoundHandler);

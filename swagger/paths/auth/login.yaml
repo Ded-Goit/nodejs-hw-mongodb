@@ -1,0 +1,53 @@
+tags:
+  - Auth
+summary: Login user
+operationId: login
+description: 'Login an existing user'
+security:
+  - bearerAuth: []
+requestBody:
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            description: "User's email"
+            type: string
+            example: 'meme.pepe@example.com'
+          password:
+            description: "User's password"
+            type: string
+            example: 'strongpassword123'
+responses:
+  '200':
+    description: 'User logged in successfully'
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully logged in an user!
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  example: yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0Yj
+                  $ref: '../../components/schemas/session.yaml'
+  '401':
+    $ref: '../../components/responses/401.yaml'
+  '404':
+    $ref: '../../components/responses/404.yaml'
